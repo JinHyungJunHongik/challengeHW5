@@ -21,7 +21,9 @@ class SearchViewModel(
     private val searchRepository: SearchRepository
 ): ViewModel() {
     private val responseData : MutableLiveData<SearchEntity.SearchImageEntity> = MutableLiveData()
+    private val bookMarkData : MutableLiveData<MutableList<SearchEntity.ImageDocumentEntity>> = MutableLiveData()
     val _responseData : LiveData<SearchEntity.SearchImageEntity> get() = responseData
+    val _bookMarkData : LiveData<MutableList<SearchEntity.ImageDocumentEntity>> get() = bookMarkData
     fun onSearch(query: String)  {
         CoroutineScope(Dispatchers.IO).launch {
             val response = searchRepository.getSearchImage(query)
@@ -29,7 +31,9 @@ class SearchViewModel(
             Log.d("확인", "${_responseData.value.toString()}")
         }
     }
-
+    fun renewBookMark() {
+        bookMarkData.value = bookMarkList
+    }
     class SearchViewModelFactory : ViewModelProvider.Factory {
 
         override fun <T : ViewModel> create(

@@ -15,7 +15,6 @@ import com.example.challengehw5.model.SearchEntity
 
 class SearchFragment : Fragment() {
     lateinit var binding : FragmentSearchBinding
-    lateinit var data: LiveData<SearchEntity.SearchImageEntity>
     lateinit var viewModel: SearchViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,14 +25,32 @@ class SearchFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel = ViewModelProvider(this, SearchViewModel.SearchViewModelFactory())[SearchViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity(), SearchViewModel.SearchViewModelFactory())[SearchViewModel::class.java]
         viewModel.onSearch("수영")
-        data = viewModel._responseData
-        data.observe(viewLifecycleOwner){
-            binding.recyclerApiTest.adapter = it.documents?.let { it1 -> SearchDataAdapter(it1) }
+        viewModel._responseData.observe(viewLifecycleOwner){
+            binding.recyclerApiTest.adapter = it.documents?.let { it1 -> SearchDataAdapter(it1, object : OnItemClick{
+                override fun onSwichCilick(data: SearchEntity.ImageDocumentEntity) {
+                    bookMarkList.add(data)
+                    viewModel.renewBookMark()
+                }
+            }) }
         }
         binding.recyclerApiTest.layoutManager = LinearLayoutManager(this.context)
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onSearch("수영")
+        viewModel._responseData.observe(viewLifecycleOwner){
+            binding.recyclerApiTest.adapter = it.documents?.let { it1 -> SearchDataAdapter(it1, object : OnItemClick{
+                override fun onSwichCilick(data: SearchEntity.ImageDocumentEntity) {
+                    bookMarkList.add(data)
+                    viewModel.renewBookMark()
+                }
+            }) }
+        }
+        binding.recyclerApiTest.layoutManager = LinearLayoutManager(this.context)
     }
 
 }

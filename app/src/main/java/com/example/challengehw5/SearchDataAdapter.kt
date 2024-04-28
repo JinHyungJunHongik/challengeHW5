@@ -5,18 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.challengehw5.model.SearchEntity
-
-class SearchDataAdapter(val data : List<SearchEntity.ImageDocumentEntity>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+interface OnItemClick {
+    fun onSwichCilick(data: SearchEntity.ImageDocumentEntity)
+}
+class SearchDataAdapter(val data : List<SearchEntity.ImageDocumentEntity>, val onItemClick: OnItemClick ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val img : ImageView
         val txt : TextView
+        val switch : Switch
         init {
             img = view.findViewById(R.id.item_img)
             txt = view.findViewById(R.id.item_textMain)
+            switch = view.findViewById(R.id.item_switch)
         }
     }
     override fun getItemCount(): Int {
@@ -32,6 +37,11 @@ class SearchDataAdapter(val data : List<SearchEntity.ImageDocumentEntity>) : Rec
         holder as SearchDataAdapter.ViewHolder
         holder.img.setImageURI(data[position].thumbnailUrl?.toUri())
         holder.txt.text = data[position].displaySitename
+        holder.switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
+                onItemClick.onSwichCilick(data[position])
+            }
+        }
     }
 
 
