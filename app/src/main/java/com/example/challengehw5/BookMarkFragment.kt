@@ -29,6 +29,22 @@ class BookMarkFragment : Fragment() {
             binding.recyclerBookmark.adapter = SearchDataAdapter(it, object : OnItemClick{
                 override fun onSwichCilick(data: SearchEntity.ImageDocumentEntity) {
                     bookMarkList.remove(data)
+                    viewModel.renewBookMark()
+                    (binding.recyclerBookmark.adapter as SearchDataAdapter).notifyDataSetChanged()
+                }
+            })
+        }
+        binding.recyclerBookmark.layoutManager = LinearLayoutManager(this.context)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel = ViewModelProvider(requireActivity(), SearchViewModel.SearchViewModelFactory())[SearchViewModel::class.java]
+        viewModel._bookMarkData.observe(viewLifecycleOwner){
+            binding.recyclerBookmark.adapter = SearchDataAdapter(it, object : OnItemClick{
+                override fun onSwichCilick(data: SearchEntity.ImageDocumentEntity) {
+                    bookMarkList.remove(data)
+                    viewModel.renewBookMark()
                     (binding.recyclerBookmark.adapter as SearchDataAdapter).notifyDataSetChanged()
                 }
             })
